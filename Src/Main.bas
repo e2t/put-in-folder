@@ -6,7 +6,7 @@ Const SectionName = "Main"
 Const KeyName = "Lines"
 
 Public FSO As FileSystemObject
-Public Lines() As String
+Public Lines As Dictionary 'as String
 
 Dim swApp As Object
 Dim CurrentDoc As ModelDoc2
@@ -31,11 +31,26 @@ Sub Main()
   If Not FSO.FileExists(SettingsPath) Then
     CreateDefaultSettingsFile SettingsPath
   End If
-  Lines = ReadIniArray(SectionName, KeyName, "There is not a line", SettingsPath, ",")
+  
+  Set Lines = New Dictionary
+  Lines.Add "(В новую папку...)", Empty
+  ReadIniArray SectionName, KeyName, "There is not a line", SettingsPath, ",", Lines
+  GetCurrentFolders CurrentDoc, Lines
   
   MainForm.Show
   
 End Sub
+
+Function MainFormInit() 'hide
+
+  Dim I As Variant
+    
+  For Each I In Lines
+    MainForm.ListBoxName.AddItem I
+  Next
+  MainForm.ListBoxName.ListIndex = 0
+
+End Function
 
 Sub CreateDefaultSettingsFile(SettingsPath As String)
 
@@ -52,6 +67,26 @@ End Sub
 Function OpenSettingsFile() 'hide
 
   Shell "notepad """ & SettingsPath & """", vbNormalFocus
+
+End Function
+
+Function RunIfSelected() 'hide
+
+  Dim FolderName As String
+
+  If MainForm.ListBoxName.ListIndex = 0 Then
+    FolderName = InputBox("Имя новой папки:")
+  ElseIf MainForm.ListBoxName.ListIndex > 0 Then
+    FolderName = MainForm.ListBoxName.Text
+  Else
+    MsgBox "Выберите раздел!", vbCritical
+  End If
+  
+  If FolderName <> "" Then
+    MainForm.Hide
+    Run FolderName
+    ExitApp
+  End If
 
 End Function
 

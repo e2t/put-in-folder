@@ -31,34 +31,40 @@ Public Function ReadIniValue(Section As String, _
 End Function
 
 'Only UTF-16LE
-Function ReadIniArray(Section As String, _
-                      KeyName As String, _
-                      DefValue As String, _
-                      IniFile As String, _
-                      Separator As String) As String()
+Sub ReadIniArray(Section As String, _
+                 KeyName As String, _
+                 DefValue As String, _
+                 IniFile As String, _
+                 Separator As String, _
+                 ByRef Lines As Dictionary)
   Dim RawLines As Variant
-  Dim Lines() As String
-  Dim Count As Integer
   Dim I As Variant
   Dim S As String
   
   RawLines = Split(ReadIniValue(Section, KeyName, DefValue, IniFile), Separator)
-  If IsArrayEmpty(RawLines) Then Exit Function
+  If Not IsArrayEmpty(RawLines) Then
+    For Each I In RawLines
+      S = Trim(I)
+      If (S <> "") And Not Lines.Exists(S) Then
+        Lines.Add S, Empty
+      End If
+    Next
+  End If
+
+End Sub
+
+Sub GetCurrentFolders(Doc As ModelDoc2, ByRef Lines As Dictionary)
+
+  Dim I As Variant
+  Dim AFeature As Feature
+  Dim Name As String
   
-  Count = 0
-  ReDim Lines(UBound(RawLines))
-  For Each I In RawLines
-    S = Trim(I)
-    If S <> "" Then
-      Lines(Count) = S
-      Count = Count + 1
+  For Each I In Doc.FeatureManager.GetFeatures(True)
+    Set AFeature = I
+    Name = AFeature.Name
+    If (AFeature.GetTypeName = "FtrFolder") And (Not Name Like "*__EndTag__*") And Not Lines.Exists(Name) Then
+      Lines.Add Name, Empty
     End If
   Next
-  If Count > 0 Then
-    ReDim Preserve Lines(Count - 1)
-  Else
-    Erase Lines
-  End If
-  ReadIniArray = Lines
 
-End Function
+End Sub

@@ -1,10 +1,10 @@
 VERSION 5.00
 Begin {C62A69F0-16DC-11CE-9E98-00AA00574A4F} MainForm 
    Caption         =   "Переместить в папку"
-   ClientHeight    =   3255
+   ClientHeight    =   5745
    ClientLeft      =   45
    ClientTop       =   390
-   ClientWidth     =   6225
+   ClientWidth     =   6090
    OleObjectBlob   =   "MainForm.frx":0000
    StartUpPosition =   1  'CenterOwner
 End
@@ -14,17 +14,6 @@ Attribute VB_Creatable = False
 Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 Option Explicit
-
-Private Function RunIfSelected() 'hide
-
-  If Me.ListBoxName.ListIndex >= 0 Then
-    Run Me.ListBoxName.Text
-    ExitApp
-  Else
-    MsgBox "Выберите раздел!", vbCritical
-  End If
-
-End Function
 
 Private Sub ButtonClose_Click()
 
@@ -53,13 +42,7 @@ End Sub
 
 Private Sub UserForm_Initialize()
 
-  Dim I As Variant
-  
-  If Not IsArrayEmpty(Lines) Then
-    For Each I In Lines
-      Me.ListBoxName.AddItem I
-    Next
-  End If
+  MainFormInit
 
 End Sub
 
