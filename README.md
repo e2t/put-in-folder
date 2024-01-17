@@ -1,4 +1,6 @@
-﻿# PutInFolder
+This project has been moved to https://codeberg.org/e2t/put-in-folder
+ 
+ # PutInFolder
 
 Макрос для перемещения компонентов сборки SolidWorks в дереве построения по стандартным папкам.
 
